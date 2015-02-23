@@ -27,36 +27,129 @@
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <title>Hello World</title>
+        <title>TODOS</title>
         <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
         <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
         <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+            <script src="js/myDb.js"></script>
     </head>
      <body>
+
+        <!-- Page -->
         <div data-role="page" id="demo-page" data-url="demo-page">
-            <div data-role="header" data-theme="b">
-                <h1>Swipe left or right</h1>
-                <a href="#left-panel" data-icon="carat-r" data-iconpos="notext" data-shadow="false" data-iconshadow="false" class="ui-nodisc-icon">Open left panel</a>
-                <a href="#right-panel" data-icon="carat-l" data-iconpos="notext" data-shadow="false" data-iconshadow="false" class="ui-nodisc-icon">Open right panel</a>
+
+            <!-- Content -->
+            <div data-role="header" data-theme="b" class="swipeHeader">
+                <h1>TODO's</h1>
             </div><!-- /header -->
+
             <div role="main" class="ui-content">
-                <dl>
-                    <dt>Swipe <span>verb</span></dt>
-                    <dd><b>1.</b> to strike or move with a sweeping motion</dd>
-                </dl>
-                <a href="#demo-intro" data-rel="back" class="back-btn ui-btn ui-corner-all ui-shadow ui-mini ui-btn-inline ui-icon-back ui-btn-icon-right">Back to demo intro</a>
+
+                <ul  data-role="listview" id="todos">
+                
+                </ul>
+
             </div><!-- /content -->
-            <div data-role="panel" id="left-panel" data-theme="b">
-                <p>Left reveal panel.</p>
-                <a href="#" data-rel="close" class="ui-btn ui-corner-all ui-shadow ui-mini ui-btn-inline ui-icon-delete ui-btn-icon-left ui-btn-right">Close</a>
+
+            <!-- left panel -->
+            <div  data-role="panel" id="left-panel" data-theme="b" >
+                <div data-iconpos="right" >
+                    <button class="big" name="buttonClick" onclick="toAddTodo()">+ TODO</button>
+                    <button class="big" name="buttonClick" onclick="toSettings()">Settings</button>
+                </div>
             </div><!-- /panel -->
+
+
+
+            <!-- right panel -->
             <div data-role="panel" id="right-panel" data-display="push" data-position="right" data-theme="b">
-                <p>Right push panel.</p>
-                <a href="#" data-rel="close" class="ui-btn ui-corner-all ui-shadow ui-mini ui-btn-inline ui-icon-delete ui-btn-icon-right">Close</a>
+                <a href="#" data-rel="close" class="ui-btn">Close</a>
+                <p>Right push panel.</p>
             </div><!-- /panel -->
+
         </div>
+
             <script>
+
+            function displayTodos(tx, results)
+            {
+                debugger;
+                var htmlString = '';
+
+                var len = results.rows.length;
+                var seeUser = window.localStorage.getItem("seeUser");
+                var seeTime = window.localStorage.getItem("seeTime");
+
+                //Haal elke rij op
+                for(var i = 0; i < len; i++)
+                {
+                    htmlString += "<li id=" + results.rows.item(i).id + "  class='todoItem'>";
+
+                    if(seeTime == "aan" || seeUser == "aan")
+                    {
+                        htmlString += "<span>";
+                        if(seeTime == "aan")
+                        {
+                            htmlString += results.rows.item(i).name;
+                        }
+
+                        if(seeUser == "aan")
+                        {
+                            htmlString += "<i>[";
+                            htmlString += results.rows.item(i).time;
+                            htmlString += "]</i>";
+
+                        }
+
+                        htmlString += "</span></br>"
+                    }
+                   
+
+                    htmlString += results.rows.item(i).descr;
+
+                  
+
+                    htmlString += "</li>";
+                }
+
+                //update de dom
+                $("#todos").html(htmlString);
+                $("#todos").listview( "refresh" );
+
+                $("li.todoItem" ).on( "taphold", function( event) {
+
+                    var r = confirm("Are you sure you want to remove this TODO?");
+                    if (r) {
+                        var db = initDB();
+                        db.transaction(function(tx){
+
+                            var id = event.currentTarget.id;
+                            var sql = "DELETE FROM TODOS WHERE id = ?";
+
+                            debugger;
+                            tx.executeSql(sql, [id], function(tx, result)
+                            {
+                                location.reload();
+                            } , errorCB);
+
+                        }, errorCB);
+                    }
+                });
+
+            }
+
             $( document ).on( "pagecreate", "#demo-page", function() {
+
+                var db = initDB();
+
+                db.transaction(function(tx){
+
+                    var sql = "SELECT * FROM TODOS";
+                    tx.executeSql(sql, [], displayTodos, errorCB);
+
+                }, errorCB);
+
+
                 $( document ).on( "swipeleft swiperight", "#demo-page", function( e ) {
                     // We check if there is no open panel on the page because otherwise
                     // a swipe to close the left panel would also open the right panel (and v.v.).
@@ -69,7 +162,12 @@
                         }
                     }
                 });
+
+             
             });
+
+            function toAddTodo(){window.location = "AddTodo.html";}
+            function toSettings(){window.location = "Settings.html";}
             </script>
      
         

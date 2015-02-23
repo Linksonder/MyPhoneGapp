@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Storage Example</title>
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <title>NEW</title>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="js/myDb.js"></script>
+
+    <script type="text/javascript" charset="utf-8">
+
+    // Wait for device API libraries to load
+    //
+    document.addEventListener("deviceready", onDeviceReady, false);
+    $( document ).ready(onDeviceReady);
+
+    // device APIs are available
+    var db;
+    function onDeviceReady() {
+
+        db = initDB();
+    }
+
+    function submitForm()
+    {
+        db.transaction(function(tx){
+
+            debugger;
+            var name = $('#name').val();
+            var descr =  $('#description').val();
+            var time = getDateTime();
+
+            var sql = 'INSERT INTO TODOS (name, descr, time) VALUES (?, ?, ?)';
+            tx.executeSql(sql, [name, descr, time], function(tx, results)
+            {
+                 window.location = "index.html";
+            }, errorCB);    
+        }, errorCB)
+    }
+
+    function getDateTime()
+    {
+        var currentdate = new Date(); 
+        var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+
+                return datetime;
+    }
+
+
+    function back()
+    {
+        window.location = "index.html";
+    }
+
+    </script>
+  </head>
+  <body>
+    <div data-role="header" data-theme="b" class="swipeHeader">
+        <button name="buttonClick" onclick="back()">back</button>
+        <h3>New TODO</h3>
+    </div><!-- /header -->
+        
+    <div role="main" class="ui-content">
+
+    
+            <input id="name" name="user" type="text" placeholder="user"/>
+            <textarea id="description" name="description" placeholder="description"></textarea>
+            <button onClick="submitForm()" value="Add" >Add</button>
+    
+
+    </div>
+
+  </body>
+</html>

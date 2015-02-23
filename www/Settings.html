@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Storage Example</title>
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <title>NEW</title>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+
+    <script type="text/javascript" charset="utf-8">
+
+    // Wait for device API libraries to load
+    //
+    document.addEventListener("deviceready", onDeviceReady, false);
+    $( document ).ready(onDeviceReady);
+
+    // device APIs are available
+    //
+    function onDeviceReady() {
+        var seeUser = window.localStorage.getItem("seeUser");
+        var seeTime = window.localStorage.getItem("seeTime");
+        $('#seeUser').val(seeUser).slider("refresh");
+        $('#seeTime').val(seeTime).slider("refresh");
+    }
+
+    function back(){window.location = "index.html";}
+
+    function saveChanges()
+    {
+        var seeUser = $('#seeUser').val();
+        var seeTime = $('#seeTime').val();
+        window.localStorage.setItem("seeUser", seeUser);
+        window.localStorage.setItem("seeTime", seeTime);
+
+        window.location = "index.html";
+    }
+
+    </script>
+  </head>
+  <body>
+    <div data-role="header" data-theme="b" class="swipeHeader">
+        <button name="buttonClick" onclick="back()">back</button>
+        <h3>Settings</h3>
+    </div><!-- /header -->
+        
+    <div role="main" class="ui-content">
+
+
+<label>Toon gebruiker bij todo:</label>
+
+<select id="seeUser" name="seeUser" id="flip-a" data-role="slider">
+    <option value="uit">uit</option>
+    <option value="aan">aan</option>
+</select> 
+
+<label>Toon tijd bij todo:</label>
+
+<select id="seeTime" name="seeTime" id="flip-a" data-role="slider">
+    <option value="uit">uit</option>
+    <option value="aan">aan</option>
+</select> 
+
+<button onClick="saveChanges()" value="Add" >Save</button>
+    
+
+    </div>
+
+  </body>
+</html>
