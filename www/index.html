@@ -32,11 +32,29 @@
         <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
         <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
             <script src="js/myDb.js"></script>
+        <script src="js/index.js"></script>
     </head>
      <body>
 
+        <div data-role="page" id="addTodoPage" data-url="addTodoPage">
+            
+            <div data-role="header" data-theme="b" class="swipeHeader">
+                <a name="buttonClick" href=""#demo-page>back</a>
+                <h3>New TODO</h3>
+            </div><!-- /header -->
+                
+            <div role="main" class="ui-content">
+
+                <input id="name" name="user" type="text" placeholder="user"/>
+                <textarea id="description" name="description" placeholder="description"></textarea>
+                <button onClick="submitForm()" value="Add" >Add</button>
+
+            </div>
+
+        </div>
+
         <!-- Page -->
-        <div data-role="page" id="demo-page" data-url="demo-page">
+        <div data-role="page" id="indexPage" data-url="indexPage">
 
             <!-- Content -->
             <div data-role="header" data-theme="b" class="swipeHeader">
@@ -54,7 +72,7 @@
             <!-- left panel -->
             <div  data-role="panel" id="left-panel" data-theme="b" >
                 <div data-iconpos="right" >
-                    <button class="big" name="buttonClick" onclick="toAddTodo()">+ TODO</button>
+                    <a class="big" href="#addTodoPage">+TODO</a>
                     <button class="big" name="buttonClick" onclick="toSettings()">Settings</button>
                 </div>
             </div><!-- /panel -->
@@ -71,96 +89,12 @@
 
             <script>
 
-            function displayTodos(tx, results)
-            {
-                debugger;
-                var htmlString = '';
 
-                var len = results.rows.length;
-                var seeUser = window.localStorage.getItem("seeUser");
-                var seeTime = window.localStorage.getItem("seeTime");
 
-                //Haal elke rij op
-                for(var i = 0; i < len; i++)
-                {
-                    htmlString += "<li id=" + results.rows.item(i).id + "  class='todoItem'>";
 
-                    if(seeTime == "aan" || seeUser == "aan")
-                    {
-                        htmlString += "<span>";
-                        if(seeTime == "aan")
-                        {
-                            htmlString += results.rows.item(i).name;
-                        }
-
-                        if(seeUser == "aan")
-                        {
-                            htmlString += "<i>[";
-                            htmlString += results.rows.item(i).time;
-                            htmlString += "]</i>";
-
-                        }
-
-                        htmlString += "</span></br>"
-                    }
-                   
-
-                    htmlString += results.rows.item(i).descr;
-
-                  
-
-                    htmlString += "</li>";
-                }
-
-                //update de dom
-                $("#todos").html(htmlString);
-                $("#todos").listview( "refresh" );
-
-                $("li.todoItem" ).on( "taphold", function( event) {
-
-                    var r = confirm("Are you sure you want to remove this TODO?");
-                    if (r) {
-                        var db = initDB();
-                        db.transaction(function(tx){
-
-                            var id = event.currentTarget.id;
-                            var sql = "DELETE FROM TODOS WHERE id = ?";
-
-                            debugger;
-                            tx.executeSql(sql, [id], function(tx, result)
-                            {
-                                location.reload();
-                            } , errorCB);
-
-                        }, errorCB);
-                    }
-                });
-
-            }
 
             $( document ).on( "pagecreate", "#demo-page", function() {
 
-                var db = initDB();
-
-                db.transaction(function(tx){
-
-                    var sql = "SELECT * FROM TODOS";
-                    tx.executeSql(sql, [], displayTodos, errorCB);
-
-                }, errorCB);
-
-
-                $( document ).on( "swipeleft swiperight", "#demo-page", function( e ) {
-                    // We check if there is no open panel on the page because otherwise
-                    // a swipe to close the left panel would also open the right panel (and v.v.).
-                    // We do this by checking the data that the framework stores on the page element (panel: open).
-                    if ( $( ".ui-page-active" ).jqmData( "panel" ) !== "open" ) {
-                        if ( e.type === "swipeleft" ) {
-                            $( "#right-panel" ).panel( "open" );
-                        } else if ( e.type === "swiperight" ) {
-                            $( "#left-panel" ).panel( "open" );
-                        }
-                    }
                 });
 
              

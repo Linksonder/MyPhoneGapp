@@ -19,10 +19,37 @@
 var app = {
     // Application Constructor
     initialize: function() {
+
+        debugger;
         this.bindEvents();
+
+        window.location.hash = 'indexPage';
+        $.mobile.initializePage();
+
+
+        var db = initDB();
+        db.transaction(function(tx){
+
+            var sql = "SELECT * FROM TODOS";
+            tx.executeSql(sql, [], displayTodos, errorCB);
+
+        }, errorCB);
+
+
+        $( document ).on( "swipeleft swiperight", "#indexPage", function( e ) {
+            // We check if there is no open panel on the page because otherwise
+            // a swipe to close the left panel would also open the right panel (and v.v.).
+            // We do this by checking the data that the framework stores on the page element (panel: open).
+            if ( $( ".ui-page-active" ).jqmData( "panel" ) !== "open" ) {
+                if ( e.type === "swipeleft" ) {
+                    $( "#right-panel" ).panel( "open" );
+                } else if ( e.type === "swiperight" ) {
+                    $( "#left-panel" ).panel( "open" );
+                }
+            }
+        });    
     },
     // Bind Event Listeners
-    //
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
     bindEvents: function() {
@@ -47,3 +74,70 @@ var app = {
         console.log('Received Event: ' + id);
     }
 };
+
+            function displayTodos(tx, results)
+            {
+                debugger;
+                var htmlString = '';
+
+                var len = results.rows.length;
+                var seeUser = window.localStorage.getItem("seeUser");
+                var seeTime = window.localStorage.getItem("seeTime");
+
+                //Haal elke rij op
+                for(var i = 0; i < len; i++)
+                {
+                    htmlString += "<li id=" + results.rows.item(i).id + "  class='todoItem'>";
+
+                    if(seeTime == "aan" || seeUser == "aan")
+                    {
+                        htmlString += "<span>";
+                        if(seeTime == "aan")
+                        {
+                            htmlString += results.rows.item(i).name;
+                        }
+
+                        if(seeUser == "aan")
+                        {
+                            htmlString += "<i>[";
+                            htmlString += results.rows.item(i).time;
+                            htmlString += "]</i>";
+
+                        }
+
+                        htmlString += "</span></br>"
+                    }
+                   
+
+                    htmlString += results.rows.item(i).descr;
+
+                  
+
+                    htmlString += "</li>";
+                }
+
+                //update de dom
+                $("#todos").html(htmlString);
+                $("#todos").listview( "refresh" );
+
+                $("li.todoItem" ).on( "taphold", function( event) {
+
+                    var r = confirm("Are you sure you want to remove this TODO?");
+                    if (r) {
+                        var db = initDB();
+                        db.transaction(function(tx){
+
+                            var id = event.currentTarget.id;
+                            var sql = "DELETE FROM TODOS WHERE id = ?";
+
+                            debugger;
+                            tx.executeSql(sql, [id], function(tx, result)
+                            {
+                                location.reload();
+                            } , errorCB);
+
+                        }, errorCB);
+                    }
+                });
+
+            }
