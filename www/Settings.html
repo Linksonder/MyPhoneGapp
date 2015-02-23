@@ -21,6 +21,8 @@
     function onDeviceReady() {
         var seeUser = window.localStorage.getItem("seeUser");
         var seeTime = window.localStorage.getItem("seeTime");
+        var defaultUser = window.localStorage.getItem("defaultUser");
+        $('#defaultUser').val(defaultUser).slider("refresh");
         $('#seeUser').val(seeUser).slider("refresh");
         $('#seeTime').val(seeTime).slider("refresh");
     }
@@ -31,6 +33,8 @@
     {
         var seeUser = $('#seeUser').val();
         var seeTime = $('#seeTime').val();
+        var defaultUser = $('#defaultUser').val();
+        window.localStorage.setItem("defaultUser", defaultUser);
         window.localStorage.setItem("seeUser", seeUser);
         window.localStorage.setItem("seeTime", seeTime);
 
@@ -47,22 +51,25 @@
         
     <div role="main" class="ui-content">
 
+    <label>Default gebruiker naam:</label>
 
-<label>Toon gebruiker bij todo:</label>
+    <input id="defaultUser" name="defaultUser" type="text"/>
 
-<select id="seeUser" name="seeUser" id="flip-a" data-role="slider">
-    <option value="uit">uit</option>
-    <option value="aan">aan</option>
-</select> 
+    <label>Toon gebruiker bij todo:</label>
 
-<label>Toon tijd bij todo:</label>
+    <select id="seeUser" name="seeUser" id="flip-a" data-role="slider">
+        <option value="uit">uit</option>
+        <option value="aan">aan</option>
+    </select> 
 
-<select id="seeTime" name="seeTime" id="flip-a" data-role="slider">
-    <option value="uit">uit</option>
-    <option value="aan">aan</option>
-</select> 
+    <label>Toon tijd bij todo:</label>
 
-<button onClick="saveChanges()" value="Add" >Save</button>
+    <select id="seeTime" name="seeTime" id="flip-a" data-role="slider">
+        <option value="uit">uit</option>
+        <option value="aan">aan</option>
+    </select> 
+
+    <button onClick="saveChanges()" value="Add" >Save</button>
     
 
     </div>

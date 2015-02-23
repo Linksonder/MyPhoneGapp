@@ -21,6 +21,14 @@
     function onDeviceReady() {
 
         db = initDB();
+
+        var defaultUser = window.localStorage.getItem("defaultUser");
+
+        if(defaultUser != undefined && defaultUser != "")
+        {
+            $('#name').val(defaultUser);
+        }
+
     }
 
     function submitForm()
@@ -50,7 +58,7 @@
                 + currentdate.getMinutes() + ":" 
                 + currentdate.getSeconds();
 
-                return datetime;
+         return datetime;
     }
 
 
